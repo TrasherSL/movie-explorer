@@ -1,5 +1,5 @@
-    import React, { createContext, useState, useEffect } from "react";
-import { fetchTrendingMovies, searchMovies } from "../api/tmdb";
+import React, { createContext, useState, useEffect } from "react";
+import { fetchTrendingMovies, searchMovies, fetchMoviesWithFilters } from "../api/tmdb"; // Including fetchMoviesWithFilters
 
 // Create a context
 export const MovieContext = createContext();
@@ -15,6 +15,14 @@ export const MovieProvider = ({ children }) => {
     setLoading(true);
     const trendingMovies = await fetchTrendingMovies();
     setMovies(trendingMovies);
+    setLoading(false);
+  };
+
+  // Fetch filtered movies based on genre, year, and rating
+  const getFilteredMovies = async (genre, year, rating) => {
+    setLoading(true);
+    const filteredMovies = await fetchMoviesWithFilters(genre, year, rating);
+    setMovies(filteredMovies);
     setLoading(false);
   };
 
@@ -36,7 +44,7 @@ export const MovieProvider = ({ children }) => {
   }, []);
 
   return (
-    <MovieContext.Provider value={{ movies, query, loading, handleSearch }}>
+    <MovieContext.Provider value={{ movies, query, loading, handleSearch, getFilteredMovies }}>
       {children}
     </MovieContext.Provider>
   );

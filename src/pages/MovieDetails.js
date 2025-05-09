@@ -1,17 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchMovieDetails } from "../api/tmdb";
-import { Container, Typography, CircularProgress, Grid, Box, Button } from "@mui/material";
+import { fetchMovieDetails, fetchMovieTrailer } from "../api/tmdb";
+import {
+  Container,
+  Typography,
+  CircularProgress,
+  Grid,
+  Box,
+  Button,
+  useTheme
+} from "@mui/material";
 
 const MovieDetails = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
+  const [trailerKey, setTrailerKey] = useState(null);
   const [loading, setLoading] = useState(true);
+  const theme = useTheme();
 
   useEffect(() => {
     const getMovieDetails = async () => {
       const details = await fetchMovieDetails(id);
+      const trailer = await fetchMovieTrailer(id); // Fetch trailer
       setMovie(details);
+      setTrailerKey(trailer); // Save trailer key
       setLoading(false);
     };
 
@@ -20,7 +32,7 @@ const MovieDetails = () => {
 
   if (loading) {
     return (
-      <Container>
+      <Container sx={{ paddingTop: 4 }}>
         <CircularProgress />
       </Container>
     );
@@ -28,7 +40,15 @@ const MovieDetails = () => {
 
   return (
     <Container sx={{ paddingTop: 4 }}>
-      <Box sx={{ backgroundColor: "#f4f4f4", padding: 4, borderRadius: 2, boxShadow: 5 }}>
+      <Box
+        sx={{
+          backgroundColor: theme.palette.background.default,
+          color: theme.palette.text.primary,
+          padding: 4,
+          borderRadius: 2,
+          boxShadow: 5,
+        }}
+      >
         <Grid container spacing={3}>
           <Grid item xs={12} sm={4}>
             <img
@@ -53,11 +73,26 @@ const MovieDetails = () => {
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
               <Typography variant="body2">Rating: {movie.vote_average}</Typography>
-              <Typography variant="body2">Genres: {movie.genres.map((genre) => genre.name).join(", ")}</Typography>
+              <Typography variant="body2">
+                Genres: {movie.genres.map((genre) => genre.name).join(", ")}
+              </Typography>
             </Box>
-            <Button variant="contained" color="primary" sx={{ marginTop: 3 }}>
-              Watch Trailer
-            </Button>
+
+            {/* Show trailer if available */}
+            {trailerKey && (
+              <Box sx={{ marginTop: 4 }}>
+                <Typography variant="h6">Watch Trailer:</Typography>
+                <iframe
+                  width="100%"
+                  height="400"
+                  src={`https://www.youtube.com/embed/${trailerKey}`}
+                  title={`${movie.title} Trailer`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </Box>
+            )}
           </Grid>
         </Grid>
       </Box>

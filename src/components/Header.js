@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, Button, IconButton } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useColorMode } from "../theme/ThemeContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
@@ -7,6 +7,8 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 
 const Header = () => {
   const { toggleColorMode, mode } = useColorMode();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Detect mobile screen
 
   return (
     <AppBar position="static">
@@ -17,19 +19,23 @@ const Header = () => {
           </Link>
         </Typography>
 
-        <div>
-          <Button color="inherit" component={Link} to="/">
-            Home
-          </Button>
-          <Button color="inherit" component={Link} to="/favorites">
-            Favorites
-          </Button>
-          <Button color="inherit" component={Link} to="/about">
-            About
-          </Button>
-          <Button color="inherit" component={Link} to="/contact">
-            Contact
-          </Button>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {!isMobile && (
+            <>
+              <Button color="inherit" component={Link} to="/">
+                Home
+              </Button>
+              <Button color="inherit" component={Link} to="/favorites">
+                Favorites
+              </Button>
+              <Button color="inherit" component={Link} to="/about">
+                About
+              </Button>
+              <Button color="inherit" component={Link} to="/contact">
+                Contact
+              </Button>
+            </>
+          )}
           <IconButton color="inherit" onClick={toggleColorMode}>
             {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
